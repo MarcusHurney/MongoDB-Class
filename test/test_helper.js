@@ -17,8 +17,14 @@ beforeEach(done => {
   // the drop function is ansync, so mocha needs to wait until drop
   // is finished before running each test
   // this is possible by passing drop a callback function called done
-  mongoose.connection.collections.users.drop(() => {
-    // Ready to run the next test!
-    done();
+  // mongo normalizes the collection names and makes them all lowercase
+  const { users, comments, blogposts } = mongoose.connection.collections;
+  users.drop(() => {
+    comments.drop(() => {
+      blogposts.drop(() => {
+        // Ready to run the next test!
+        done();
+      });
+    });
   });
 });

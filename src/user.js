@@ -12,8 +12,19 @@ const UserSchema = new Schema({
     },
     required: true
   },
-  postCount: Number,
-  posts: [PostSchema]
+  posts: [PostSchema],
+  likes: Number,
+  blogPosts: [{
+    type: Schema.Types.ObjectId,
+    ref: 'blogPost'
+  }]
+});
+
+// virtual properties are added as separate declarations
+UserSchema.virtual('postCount').get(function() {
+  // 'this' will refer to the instance of the model
+  // from which postCount is called
+  return this.posts.length;
 });
 
 const User = mongoose.model('user', UserSchema);

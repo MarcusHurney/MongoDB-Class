@@ -38,4 +38,35 @@ describe('Subdocuments', () => {
         done();
       });
   });
+
+  it('can remove an existing subdocument', done => {
+    // create a user with a single post object
+    const joe = new User({
+      name: 'Joe',
+      posts: [{ title: 'New Post Title' }]
+    });
+
+    joe.save()
+      .then(() => User.findOne({ name: 'Joe' }))
+      .then(user => {
+        // remove embedded document using mongoose remove() method
+        const post = user.posts[0];
+        post.remove();
+        // save updated user instance
+        return user.save();
+      })
+      .then(() => User.findOne({ name: 'Joe' }))
+      .then(user => {
+        // assert that user's posts are empty
+        assert(user.posts.length === 0);
+        done();
+      });
+  });
+
+  it('a user can increment their likes by 10', done => {
+    User.update({ name: 'Joe' }, { $inc: { likes: 10 } })
+      .then(() => User.findOne({ name: 'Joe' }))
+      .then(user => user.likes === 10);
+      done();
+  });
 });
